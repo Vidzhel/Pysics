@@ -2,7 +2,7 @@ import math
 
 
 class Vector2d:
-    """Represent vector in 2D world
+    """Represent vector in 2D space
 
     Provide all essential methods, in order to work with 2D vectors
     """
