@@ -4,8 +4,8 @@ from . import shapes
 
 class BaseObject:
 
-    def __init__(self, shape: shapes.shape_type,
-                 position: Vector2d, origin: Vector2d, rotation: float = 0.0) -> None:
+    def __init__(self, shape: shapes.BaseShape,
+                 position: Vector2d = Vector2d(0, 0), origin: Vector2d = Vector2d(0, 0), rotation: float = 0.0) -> None:
 
         # TODO check the position regarding to the scene size
         self.position = position
@@ -13,7 +13,7 @@ class BaseObject:
 
         self.rotation = rotation
 
-        self.shape = shapes.shape_type(shape)
+        self.shape = shape
 
     def is_static(self):
         pass
@@ -31,15 +31,13 @@ class BaseObject:
 class BaseNonStaticObject(BaseObject):
     """Represent an object of arbitrary size that you can put in a scene and simulate"""
 
-    def __init__(self, shape: shapes.shape_type,
+    def __init__(self, shape: shapes.BaseShape,
                  velocity: Vector2d = Vector2d(0, 0),
                  position: Vector2d = Vector2d(0, 0),
-                 origin: Vector2d = Vector2d(0, 0), mass: float = 0.0,
+                 origin: Vector2d = Vector2d(0, 0), mass: float = 1.0,
                  force: Vector2d = Vector2d(0, 0),
                  rotation: float = 0.0) -> None:
         """Create an object that you can interact with other objects
-
-        mass specified in kilograms
 
         Position will be calculated regarding to a scene origin coordinates
         It is possible to specify position in persentage
@@ -63,10 +61,10 @@ class BaseNonStaticObject(BaseObject):
         return False
 
     def add_force(self, force: Vector2d) -> None:
-        self.result_force += force
+        self.result_force = self.result_force + force
 
     def substract_force(self, force: Vector2d) -> None:
-        self.result_force -= force
+        self.result_force = self.result_force - force
 
     def clear_force(self) -> None:
         self.result_force = Vector2d(0, 0)
@@ -120,13 +118,12 @@ class NonInteractiveObject(BaseNonStaticObject):
 
 class StaticObject(BaseStaticObject):
 
-    def __init__(self, shape: shapes.shape_type,
+    def __init__(self, shape: shapes.BaseShape,
                  position: Vector2d = Vector2d(0, 0),
                  origin: Vector2d = Vector2d(0, 0),
                  rotation: float = 0.0) -> None:
         """Create an object that can't move but can interact with other objects
 
-        mass specified in kilograms
         Position will be calculated regarding to a scene origin coordinates
         It is possible to specify position in persentage
          using set_position_persentages() and set_origin_persentages() functions

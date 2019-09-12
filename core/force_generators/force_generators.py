@@ -27,6 +27,9 @@ class BaseForceGenerator:
         """Deactivate force, afterwards it will be deleted"""
         self.active = False
 
+    def __str__(self):
+        return f"{self.name}({self.active}): \n\n {self.targeted_objects}"
+
 
 class StaticForceGenerator(BaseForceGenerator):
     """A class for static force (will apply a force all the time)
@@ -62,8 +65,10 @@ class StaticForceGenerator(BaseForceGenerator):
             return None
 
         for obj in self.targeted_objects:
-            if not obj.is_static():
-                obj.add_force(self.force)
+            obj.add_force(self.force)
+
+    def __str__(self):
+        return f"{self.name} (Force: {self.force}) (Active: {self.active}): \n\n {self.targeted_objects}"
 
 
 class CalculatedForceGenerator(BaseForceGenerator):
@@ -94,7 +99,7 @@ class CalculatedForceGenerator(BaseForceGenerator):
 
     def apply_force(self, time_since_last_apply: float):
         """The method will be called by update_scene method of a Scene object
-        which in the turn will call calculate_force function 
+        which in the turn will call calculate_force function
 
         all static objects will be omitted
         """
@@ -103,9 +108,8 @@ class CalculatedForceGenerator(BaseForceGenerator):
             return None
 
         for obj in self.targeted_objects:
-            if not obj.is_static():
-                force = self.calculate_force(obj, time_since_last_apply)
-                obj.add_force(force)
+            force = self.calculate_force(obj, time_since_last_apply)
+            obj.add_force(force)
 
 
 class TemporaryForceGenerator(BaseForceGenerator):
@@ -149,10 +153,12 @@ class TemporaryForceGenerator(BaseForceGenerator):
             return None
 
         for obj in self.targeted_objects:
-            if not obj.is_static():
-                obj.add_force(self.force)
+            obj.add_force(self.force)
 
         self.duration -= time_since_last_apply
+
+    def __str__(self):
+        return f"{self.name} (Duration: {self.duration}s)(Active: {self.active}): \n\n {self.targeted_objects}"
 
 
 class ConditionalForceGenerator(BaseForceGenerator):
@@ -192,5 +198,5 @@ class ConditionalForceGenerator(BaseForceGenerator):
             return None
 
         for obj in self.targeted_objects:
-            if not obj.is_static() and self.condition:
+            if self.condition(obj):
                 obj.add_force(self.force)
