@@ -24,6 +24,8 @@ class Vector2d:
         self.x += another_vector.x
         self.y += another_vector.y
 
+        return self
+
     def add_scaled_vector(self, another_vector: "Vector2d", scaler: float) -> "Vector2d":
         return Vector2d(self.x + (another_vector.x * scaler), self.y + (another_vector.y * scaler))
 
@@ -36,6 +38,8 @@ class Vector2d:
     def __isub__(self, another_vector: "Vector2d") -> "Vector2d":
         self.x -= another_vector.x
         self.y -= another_vector.y
+        
+        return self
 
     def dot_product(self, another_vector: "Vector2d") -> float:
         return self.x * another_vector.x + self.y * another_vector.y

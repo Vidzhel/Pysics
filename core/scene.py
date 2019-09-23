@@ -1,7 +1,7 @@
 from typing import List, Optional
-from core.environments import Environment
-from core.vector2d import Vector2d
-from core.force_generators.force_generators import BaseForceGenerator
+from pylint.core.environments import Environment
+from .vector2d import Vector2d
+from .force_generators.force_generators import BaseForceGenerator
 
 
 class Scene:

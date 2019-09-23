@@ -20,7 +20,7 @@ def condition(obj):
 
 class TestBaseForceGenerators(unittest.TestCase):
 
-    shape = Circle(1)
+    shape = Circle(Vector2d(0, 0),1)
 
     _object = Object(shape)
 
