@@ -1,7 +1,8 @@
 from typing import List
+
 from core.force_generators import force_generators
-from core.vector2d import Vector2d
-from core.Objects.objects import BaseNonStaticObject
+from core.math.vector2d import Vector2d
+from core.objects.objects import BaseNonStaticObject
 
 
 class DrugForce(force_generators.StaticForceGenerator):
@@ -29,7 +30,7 @@ class DrugForce(force_generators.StaticForceGenerator):
         force_magnitude = self.coefficient_low_velocity * velocity
         force_magnitude += self.coefficient_high_velocity * velocity * velocity
 
-        force = velocity_direction.scale_vector(force_magnitude)
+        force = velocity_direction.scale(force_magnitude)
 
         # Force has opposite the velocity direction
         force.inverse()

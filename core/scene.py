@@ -1,6 +1,7 @@
 from typing import List, Optional
-from pylint.core.environments import Environment
-from .vector2d import Vector2d
+
+from core.environments import Environment
+from core.math.vector2d import Vector2d
 from .force_generators.force_generators import BaseForceGenerator
 
 
@@ -13,7 +14,7 @@ class Scene:
         """Creates scene which is used to set environments and objects.
 
         origin (float): define origin coordinates
-            can be setted in persentages using set_origin_persentages function
+            can be setted in percentages using set_origin_percentages function
             starting from the left upper corner by default (0, 0)
         time_flow_coefficient (float): set the time flow speed multiplier 
         force_generators (Optional[List[BaseForceGenerator]]): list of force generators
@@ -43,7 +44,7 @@ class Scene:
         """Adds mew environment to a scene"""
         self.environments.append(environment)
 
-    def set_origin_persentages(self):
+    def set_origin_percentages(self):
         pass
 
     def update_scene(self, time_since_last_update):

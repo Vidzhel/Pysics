@@ -1,7 +1,7 @@
 import unittest
-from core.vector2d import Vector2d
-from core.Objects.objects import Object
-from core.Objects.shapes import Circle, Polygon
+
+from core.objects.objects import Object
+
 
 class TestObjects(unittest.TestCase):
     

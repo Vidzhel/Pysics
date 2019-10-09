@@ -1,7 +1,7 @@
 import unittest
 
 
-class Test_PysicsCommandLine(unittest.TestCase):
+class Test_PysicsCommandSegment(unittest.TestCase):
     pass
 
 

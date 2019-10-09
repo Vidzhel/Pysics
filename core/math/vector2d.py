@@ -8,11 +8,14 @@ class Vector2d:
     """
 
     def __init__(self, x: float, y: float):
-        self.x = x
-        self.y = y
+	    self.x = round(float(x), 4)
+	    self.y = round(float(y), 4)
 
-    def scale_vector(self, scaler: float) -> "Vector2d":
-        return Vector2d(self.x * scaler, self.y * scaler)
+    def scale(self, scalar: float) -> "Vector2d":
+	    return Vector2d(self.x * scalar, self.y * scalar)
+
+    def copy(self):
+	    return Vector2d(self.x, self.y)
 
     def add_vector(self, another_vector: "Vector2d") -> "Vector2d":
         return Vector2d(self.x + another_vector.x, self.y + another_vector.y)
@@ -26,20 +29,51 @@ class Vector2d:
 
         return self
 
-    def add_scaled_vector(self, another_vector: "Vector2d", scaler: float) -> "Vector2d":
-        return Vector2d(self.x + (another_vector.x * scaler), self.y + (another_vector.y * scaler))
+    def project_on(self, another_vector: "Vector2d"):
+	    projection_len = self.dot_product(another_vector)
+	    another_vector_squared_len = another_vector.get_squared_magnitude()
+	    scalar = projection_len / another_vector_squared_len
 
-    def substract_vector(self, another_vector: "Vector2d") -> "Vector2d":
+	    return another_vector.scale(scalar)
+
+    def get_cos_of_angle(self, other: "Vector2d") -> float:
+	    numerator = self.dot_product(other)
+	    denominator = self.get_magnitude() * other.get_magnitude()
+
+	    return numerator / denominator
+
+    def get_angle(self, other: "Vector2d") -> float:
+	    cos = self.get_cos_of_angle(other)
+	    angle_radians = math.acos(cos)
+
+	    return math.degrees(angle_radians)
+
+    def get_perpendicular_vector(self):
+	    return Vector2d(self.y, -self.x)
+
+    def add_scaled_vector(self, another_vector: "Vector2d", scalar: float) -> "Vector2d":
+	    return Vector2d(self.x + (another_vector.x * scalar), self.y + (another_vector.y * scalar))
+
+    def subtract_vector(self, another_vector: "Vector2d") -> "Vector2d":
         return Vector2d(self.x - another_vector.x, self.y - another_vector.y)
 
     def __sub__(self, another_vector: "Vector2d") -> "Vector2d":
-        return self.substract_vector(another_vector)
+	    return self.subtract_vector(another_vector)
 
     def __isub__(self, another_vector: "Vector2d") -> "Vector2d":
         self.x -= another_vector.x
         self.y -= another_vector.y
-        
+
         return self
+
+    def cross(self, other: "Vector2d") -> float:
+	    """Cross product (vector product) of vectors
+
+		Returns the magnitude of the vector that perpendicular
+		to the plain that contains these vectors
+		"""
+
+	    return (self.x * other.y) - (self.y * other.x)
 
     def dot_product(self, another_vector: "Vector2d") -> float:
         return self.x * another_vector.x + self.y * another_vector.y
@@ -68,7 +102,7 @@ class Vector2d:
         normalized_x = 0.0
         normalized_y = 0.0
 
-        if(magnitude != 0):
+        if magnitude != 0:
             normalized_x = self.x / magnitude
             normalized_y = self.y / magnitude
 
@@ -79,7 +113,8 @@ class Vector2d:
         if not isinstance(other, Vector2d):
             return NotImplemented
 
-        if(self.x == other.x and self.y == other.y):
+        if math.isclose(self.x, other.x, abs_tol=0.01) and \
+		        math.isclose(self.y, other.y, abs_tol=0.01):
             return True
 
         return False

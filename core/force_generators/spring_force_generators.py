@@ -1,7 +1,8 @@
 from typing import List
+
 from core.force_generators.force_generators import StaticForceGenerator
-from core.Objects.objects import BaseNonStaticObject
-from core.vector2d import Vector2d
+from core.math.vector2d import Vector2d
+from core.objects.objects import BaseNonStaticObject
 
 
 class SpringForceGenerator(StaticForceGenerator):
@@ -46,7 +47,7 @@ class SpringForceGenerator(StaticForceGenerator):
         force_magnitude = abs(force_magnitude - self.rest_length)
         force_magnitude *= self.spring_coefficient
 
-        force = force_direction.scale_vector(force_magnitude)
+        force = force_direction.scale(force_magnitude)
         return force
 
 class AnchoredSpringForceGenerator(StaticForceGenerator):
@@ -87,7 +88,7 @@ class AnchoredSpringForceGenerator(StaticForceGenerator):
         force_magnitude = abs(force_magnitude - self.rest_length)
         force_magnitude *= self.spring_coefficient
 
-        force = force_direction.scale_vector(force_magnitude)
+        force = force_direction.scale(force_magnitude)
         return force
 
 
@@ -139,7 +140,7 @@ class BungeeForceGenerator(StaticForceGenerator):
         force_magnitude = abs(force_magnitude - self.rest_length)
         force_magnitude *= self.spring_coefficient
 
-        force = force_direction.scale_vector(force_magnitude)
+        force = force_direction.scale(force_magnitude)
         return force
 
 
@@ -191,7 +192,7 @@ class BuoyancyForceGenerator(StaticForceGenerator):
             penetration_part_area = collision_info.get_penetration_part_area()
             force_magnitude = self.completely_submerged(penetration_part_area, area)
 
-        force = self.force_direction.scale_vector(force_magnitude)
+        force = self.force_direction.scale(force_magnitude)
         return force
 
 

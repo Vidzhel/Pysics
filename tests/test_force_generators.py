@@ -1,14 +1,16 @@
 import unittest
-from core.force_generators.force_generators import StaticForceGenerator, CalculatedForceGenerator, TemporaryForceGenerator, ConditionalForceGenerator
-from core.Objects.objects import Object, BaseNonStaticObject
-from core.Objects.shapes import Circle
-from core.vector2d import Vector2d
+
+from core.force_generators.force_generators import (StaticForceGenerator, CalculatedForceGenerator,
+                                                    TemporaryForceGenerator, ConditionalForceGenerator)
+from core.math.geometry.geometry_objects import Circle
+from core.math.vector2d import Vector2d
+from core.objects.objects import Object, BaseNonStaticObject
 
 
 def calculator(obj: BaseNonStaticObject, time: float):
     mass = obj.mass
 
-    return Vector2d(1, 1).scale_vector(mass)
+    return Vector2d(1, 1).scale(mass)
 
 
 def condition(obj):
@@ -47,7 +49,7 @@ class TestBaseForceGenerators(unittest.TestCase):
         self.calculated_force_generator.apply_force(1)
 
         self.assertEqual(self._object.result_force,
-                         Vector2d(1, 1).scale_vector(self._object.mass), "Calculated force error")
+                         Vector2d(1, 1).scale(self._object.mass), "Calculated force error")
 
         self._object.clear_force()
 

@@ -1,11 +1,11 @@
-from core.vector2d import Vector2d
-from . import shapes
+from core.math.geometry import geometry_objects
+from core.math.vector2d import Vector2d
 
 
 class BaseObject:
 
-    def __init__(self, shape: shapes.BaseShape,
-                 position: Vector2d = Vector2d(0, 0), origin: Vector2d = Vector2d(0, 0), rotation: float = 0.0) -> None:
+	def __init__(self, shape: geometry_objects.BaseShape,
+	             position: Vector2d = Vector2d(0, 0), origin: Vector2d = Vector2d(0, 0), rotation: float = 0.0) -> None:
 
         # TODO check the position regarding to the scene size
         self.position = position
@@ -18,20 +18,20 @@ class BaseObject:
     def is_static(self):
         pass
 
-    def set_position_persentages(self):
+	def set_position_percentages(self):
         pass
 
-    def set_origin_persentages(self):
+	def set_origin_percentages(self):
         pass
 
-    def set_rotation_presentages(self):
+	def set_rotation_percentages(self):
         pass
 
 
 class BaseNonStaticObject(BaseObject):
     """Represent an object of arbitrary size that you can put in a scene and simulate"""
 
-    def __init__(self, shape: shapes.BaseShape,
+    def __init__(self, shape: geometry_objects.BaseShape,
                  velocity: Vector2d = Vector2d(0, 0),
                  position: Vector2d = Vector2d(0, 0),
                  origin: Vector2d = Vector2d(0, 0), mass: float = 1.0,
@@ -40,11 +40,11 @@ class BaseNonStaticObject(BaseObject):
         """Create an object that you can interact with other objects
 
         Position will be calculated regarding to a scene origin coordinates
-        It is possible to specify position in persentage
-         using set_position_persentages() and set_origin_persentages() functions
+        It is possible to specify position in percentage
+         using set_position_percentages() and set_origin_percentages() functions
 
         Rotation specified in degrees, you can
-         use set_rotation_presentages to set rotation in persentages
+         use set_rotation_percentages to set rotation in percentages
 
         """
 
@@ -63,7 +63,7 @@ class BaseNonStaticObject(BaseObject):
     def add_force(self, force: Vector2d) -> None:
         self.result_force = self.result_force + force
 
-    def substract_force(self, force: Vector2d) -> None:
+    def subtract_force(self, force: Vector2d) -> None:
         self.result_force = self.result_force - force
 
     def clear_force(self) -> None:
@@ -87,7 +87,7 @@ class Object(BaseNonStaticObject):
 
         self.position.add_scaled_vector(self.velocity, time_since_last_update)
 
-        acceleration = self.result_force.scale_vector(self.inverted_mass)
+        acceleration = self.result_force.scale(self.inverted_mass)
         self.velocity.add_scaled_vector(acceleration, time_since_last_update)
 
         self.clear_force()
@@ -107,7 +107,7 @@ class NonInteractiveObject(BaseNonStaticObject):
 
         self.position.add_scaled_vector(self.velocity, time_since_last_update)
 
-        acceleration = self.result_force.scale_vector(self.inverted_mass)
+        acceleration = self.result_force.scale(self.inverted_mass)
         self.velocity.add_scaled_vector(acceleration, time_since_last_update)
 
         self.clear_force()
@@ -118,18 +118,18 @@ class NonInteractiveObject(BaseNonStaticObject):
 
 class StaticObject(BaseStaticObject):
 
-    def __init__(self, shape: shapes.BaseShape,
-                 position: Vector2d = Vector2d(0, 0),
-                 origin: Vector2d = Vector2d(0, 0),
-                 rotation: float = 0.0) -> None:
+	def __init__(self, shape: geometry_objects.BaseShape,
+	             position: Vector2d = Vector2d(0, 0),
+	             origin: Vector2d = Vector2d(0, 0),
+	             rotation: float = 0.0) -> None:
         """Create an object that can't move but can interact with other objects
 
         Position will be calculated regarding to a scene origin coordinates
-        It is possible to specify position in persentage
-         using set_position_persentages() and set_origin_persentages() functions
+        It is possible to specify position in percentage
+         using set_position_percentages() and set_origin_percentages() functions
 
         Rotation specified in degrees, you can
-         use set_rotation_presentages to set rotation in persentages
+         use set_rotation_percentages to set rotation in percentages
 
         """
 
