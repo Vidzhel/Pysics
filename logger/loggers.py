@@ -121,6 +121,7 @@ class Logger(ABC):
 
 
 class ConsoleLogger(Logger):
+	"""Logs data to a console"""
 
 	@staticmethod
 	def log_info(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
@@ -148,6 +149,7 @@ class ConsoleLogger(Logger):
 
 
 class FileLogger(Logger):
+	"""Logs data to a file"""
 
 	@classmethod
 	def set_default_file(cls, default_file_path: str):
@@ -228,3 +230,31 @@ class FileLogger(Logger):
 
 		with open(file_path, "a+") as file:
 			file.write(data + "\n")
+
+
+class LoggingSystem(Logger):
+	"""Logs data to console and file"""
+
+	@classmethod
+	def log_info(cls, message: str, file_path: Optional[str] = None,
+	             time: datetime.time = datetime.datetime.now().time()) -> None:
+		ConsoleLogger.log_info(message, time)
+		FileLogger.log_info(message, file_path, time)
+
+	@classmethod
+	def log_warning(cls, message: str, file_path: Optional[str] = None,
+	                time: datetime.time = datetime.datetime.now().time()) -> None:
+		ConsoleLogger.log_warning(message, time)
+		FileLogger.log_warning(message, file_path, time)
+
+	@classmethod
+	def log_error(cls, message: str, file_path: Optional[str] = None,
+	              time: datetime.time = datetime.datetime.now().time()) -> None:
+		ConsoleLogger.log_error(message, time)
+		FileLogger.log_error(message, file_path, time)
+
+	@classmethod
+	def log_succeeded(cls, message: str, file_path: Optional[str] = None,
+	                  time: datetime.time = datetime.datetime.now().time()) -> None:
+		ConsoleLogger.log_succeeded(message, time)
+		FileLogger.log_succeeded(message, file_path, time)
