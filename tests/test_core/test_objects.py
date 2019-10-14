@@ -1,6 +1,6 @@
 import unittest
 
-from core.objects.objects import Object
+from core.objects.object import Object
 
 
 class TestObjects(unittest.TestCase):

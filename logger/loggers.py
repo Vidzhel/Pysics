@@ -6,39 +6,46 @@ from .message_types import InfoMessage, WarningMessage, ErrorMessage, SucceededM
 
 
 class Logger(ABC):
+	is_active = False
 
-	@staticmethod
-	def log_info(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def activate(cls):
+		cls.is_active = True
+
+	@classmethod
+	def log_info(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
 		pass
 
-	@staticmethod
-	def log_warning(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_warning(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
 		pass
 
-	@staticmethod
-	def log_error(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_error(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
 		pass
 
-	@staticmethod
-	def log_succeeded(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_succeeded(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
 		pass
 
-	@staticmethod
-	def decorator_info(start_mess: Optional[str] = None, end_message: Optional[str] = None):
+	@classmethod
+	def decorator_info(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
 
 		def decorator(func):
 
 			def inner(*args, **kwargs):
-				if start_mess:
+
+				if start_mess and cls.is_active:
 					ConsoleLogger.log_info(start_mess)
 
 				try:
 					res = func(*args, **kwargs)
 				except Exception as e:
-					ConsoleLogger.log_error(str(e.with_traceback))
+					if cls.is_active:
+						ConsoleLogger.log_error(str(e.with_traceback))
 					raise e
 
-				if end_message:
+				if end_message and cls.is_active:
 					ConsoleLogger.log_info(end_message)
 
 				return res
@@ -47,22 +54,23 @@ class Logger(ABC):
 
 		return decorator
 
-	@staticmethod
-	def decorator_warning(start_mess: Optional[str] = None, end_message: Optional[str] = None):
+	@classmethod
+	def decorator_warning(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
 
 		def decorator(func):
 
 			def inner(*args, **kwargs):
-				if start_mess:
+				if start_mess and cls.is_active:
 					ConsoleLogger.log_warning(start_mess)
 
 				try:
 					res = func(*args, **kwargs)
 				except Exception as e:
-					ConsoleLogger.log_error(str(e.with_traceback))
+					if cls.is_active:
+						ConsoleLogger.log_error(str(e.with_traceback))
 					raise e
 
-				if end_message:
+				if end_message and cls.is_active:
 					ConsoleLogger.log_warning(end_message)
 
 				return res
@@ -71,22 +79,23 @@ class Logger(ABC):
 
 		return decorator
 
-	@staticmethod
-	def decorator_error(start_mess: Optional[str] = None, end_message: Optional[str] = None):
+	@classmethod
+	def decorator_error(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
 
 		def decorator(func):
 
 			def inner(*args, **kwargs):
-				if start_mess:
+				if start_mess and cls.is_active:
 					ConsoleLogger.log_error(start_mess)
 
 				try:
 					res = func(*args, **kwargs)
 				except Exception as e:
-					ConsoleLogger.log_error(str(e.with_traceback))
+					if cls.is_active:
+						ConsoleLogger.log_error(str(e.with_traceback))
 					raise e
 
-				if end_message:
+				if end_message and cls.is_active:
 					ConsoleLogger.log_error(end_message)
 
 				return res
@@ -95,22 +104,23 @@ class Logger(ABC):
 
 		return decorator
 
-	@staticmethod
-	def decorator_succeeded(start_mess: Optional[str] = None, end_message: Optional[str] = None):
+	@classmethod
+	def decorator_succeeded(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
 
 		def decorator(func):
 
 			def inner(*args, **kwargs):
-				if start_mess:
+				if start_mess and cls.is_active:
 					ConsoleLogger.log_succeeded(start_mess)
 
 				try:
 					res = func(*args, **kwargs)
 				except Exception as e:
-					ConsoleLogger.log_error(str(e.with_traceback))
+					if cls.is_active:
+						ConsoleLogger.log_error(str(e.with_traceback))
 					raise e
 
-				if end_message:
+				if end_message and cls.is_active:
 					ConsoleLogger.log_succeeded(end_message)
 
 				return res
@@ -123,26 +133,38 @@ class Logger(ABC):
 class ConsoleLogger(Logger):
 	"""Logs data to a console"""
 
-	@staticmethod
-	def log_info(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_info(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		info = InfoMessage(message, time)
 
 		print(info)
 
-	@staticmethod
-	def log_warning(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_warning(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		warning = WarningMessage(message, time)
 
 		print(warning)
 
-	@staticmethod
-	def log_error(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_error(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		error = ErrorMessage(message, time)
 
 		print(error)
 
-	@staticmethod
-	def log_succeeded(message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+	@classmethod
+	def log_succeeded(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		succeeded = SucceededMessage(message, time)
 
 		print(succeeded)
@@ -195,6 +217,9 @@ class FileLogger(Logger):
 	@classmethod
 	def log_info(cls, message: str, file_path: Optional[str] = None,
 	             time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		info = str(InfoMessage(message, time))
 
 		cls.log_to_file(file_path, info)
@@ -202,6 +227,9 @@ class FileLogger(Logger):
 	@classmethod
 	def log_warning(cls, message: str, file_path: Optional[str] = None,
 	                time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		warning = str(WarningMessage(message, time))
 
 		cls.log_to_file(file_path, warning)
@@ -209,6 +237,9 @@ class FileLogger(Logger):
 	@classmethod
 	def log_error(cls, message: str, file_path: Optional[str] = None,
 	              time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		error = str(ErrorMessage(message, time))
 
 		cls.log_to_file(file_path, error)
@@ -216,6 +247,9 @@ class FileLogger(Logger):
 	@classmethod
 	def log_succeeded(cls, message: str, file_path: Optional[str] = None,
 	                  time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		succeeded = str(SucceededMessage(message, time))
 
 		cls.log_to_file(file_path, succeeded)

@@ -2,7 +2,7 @@ from typing import List
 
 from core.force_generators import force_generators
 from core.math.vector2d import Vector2d
-from core.objects.objects import BaseNonStaticObject
+from core.objects.object import BaseNonStaticObject
 
 
 class DrugForce(force_generators.StaticForceGenerator):

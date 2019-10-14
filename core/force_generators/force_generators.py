@@ -1,7 +1,7 @@
 from typing import List, Callable
 
 from core.math.vector2d import Vector2d
-from core.objects.objects import BaseNonStaticObject
+from core.objects.object import BaseNonStaticObject
 
 
 class BaseForceGenerator:

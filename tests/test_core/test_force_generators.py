@@ -4,7 +4,7 @@ from core.force_generators.force_generators import (StaticForceGenerator, Calcul
                                                     TemporaryForceGenerator, ConditionalForceGenerator)
 from core.math.geometry.geometry_objects import Circle
 from core.math.vector2d import Vector2d
-from core.objects.objects import Object, BaseNonStaticObject
+from core.objects.object import Object, BaseNonStaticObject
 
 
 def calculator(obj: BaseNonStaticObject, time: float):

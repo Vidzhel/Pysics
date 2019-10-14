@@ -2,7 +2,7 @@ from typing import List
 
 from core.force_generators.force_generators import StaticForceGenerator
 from core.math.vector2d import Vector2d
-from core.objects.objects import BaseNonStaticObject
+from core.objects.object import BaseNonStaticObject
 
 
 class SpringForceGenerator(StaticForceGenerator):

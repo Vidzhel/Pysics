@@ -1,6 +1,6 @@
 from core.math.vector2d import Vector2d
 from core.objects.game_object import GameObject
-from .base_component import BaseComponent, CT_RIGID_BODY, CT_TRANSFORM
+from core.objects.object_components.base_component import BaseComponent, CT_RIGID_BODY, CT_TRANSFORM
 
 RB_TYPES = ("dynamic", "kinematic", "static")
 

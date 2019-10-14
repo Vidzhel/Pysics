@@ -3,26 +3,26 @@ from typing import List, Optional
 from core.math.vector2d import Vector2d
 from logger.loggers import LoggingSystem as Logger
 from .force_generators.force_generators import BaseForceGenerator
-from .objects.objects import Object
+from .objects.object import Object
 
 
-class Scene:
+class Scene(Object):
 
-	def __init__(self, name: str, id: int, origin: Vector2d = Vector2d(0.5, 0.5),
+	def __init__(self, name: str, origin: Vector2d = Vector2d(0.5, 0.5),
 	             time_flow_coefficient: float = 1.0,
 	             force_generators: Optional[List[BaseForceGenerator]] = None) -> None:
 		"""Creates scene which is used to set environments and objects.
 
 		origin (float): define origin coordinates
-			can be setted in percentages using set_origin_percentages function
+			can be seated in percentages using set_origin_percentages function
 			starting from the left upper corner by default (0, 0)
 		time_flow_coefficient (float): set the time flow speed multiplier
 		force_generators (Optional[List[BaseForceGenerator]]): list of force generators
 			that apply forces on objects
 		"""
-		self.id = id
-		self.name = name
+		super(Scene, self).__init__(name)
 		self.object_id = 0
+		self.is_active = False
 
 		self.origin = origin
 		self.forces_registry: List[BaseForceGenerator] = []
@@ -69,12 +69,12 @@ class Scene:
 		self.forces_registry.append(force_generator)
 
 	@Logger.decorator_succeeded(end_message="Scene successfully updated")
-	def update_scene(self, time_since_last_update):
+	def update(self, delta_time):
 		"""Updates every environment and
 		apply forces in a scene
 		"""
 
-		multiplied_time = self.time_flow_coefficient * time_since_last_update
+		multiplied_time = self.time_flow_coefficient * delta_time
 
 		self.apply_forces(multiplied_time)
 

@@ -2,7 +2,7 @@ import unittest
 
 from core.math.geometry.geometry_objects import Circle, ConvexPolygon
 from core.math.vector2d import Vector2d
-from core.objects.objects import Object
+from core.objects.object import Object
 
 
 class TestObjectComponents(unittest.TestCase):
