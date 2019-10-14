@@ -13,19 +13,6 @@ class BaseGeometryObject(ABC):
 	def is_point_belongs(self, point) -> bool:
 		pass
 
-
-class Particle(BaseGeometryObject):
-
-	def __init__(self, position: Vector2d) -> None:
-		self.position = position
-
-	def is_point_belongs(self, point) -> bool:
-		if point == self.position:
-			return True
-
-		return False
-
-
 class Ray(BaseGeometryObject):
 	"""Represents a line that starts at first_point and goes through the second_point into the
 	infinity"""
@@ -204,7 +191,6 @@ class BaseShape(BaseGeometryObject):
 	@abstractmethod
 	def get_support_point(self, direction: Vector2d):
 		"""Gets a point with the biggest dot product on the direction vector"""
-
 
 class Circle(BaseShape):
 	"""Represent circle shape that you can use to create object"""

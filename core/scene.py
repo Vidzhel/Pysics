@@ -1,76 +1,110 @@
 from typing import List, Optional
 
-from core.environments import Environment
 from core.math.vector2d import Vector2d
+from logger.loggers import LoggingSystem as Logger
 from .force_generators.force_generators import BaseForceGenerator
+from .objects.objects import Object
 
 
 class Scene:
 
-    def __init__(self, width: float, height: float, origin: Vector2d,
-                 environments: Optional[List[Environment]] = None,
-                 time_flow_coefficient: float = 1.0,
-                 force_generators: Optional[List[BaseForceGenerator]] = None) -> None:
-        """Creates scene which is used to set environments and objects.
+	def __init__(self, name: str, id: int, origin: Vector2d = Vector2d(0.5, 0.5),
+	             time_flow_coefficient: float = 1.0,
+	             force_generators: Optional[List[BaseForceGenerator]] = None) -> None:
+		"""Creates scene which is used to set environments and objects.
 
-        origin (float): define origin coordinates
-            can be setted in percentages using set_origin_percentages function
-            starting from the left upper corner by default (0, 0)
-        time_flow_coefficient (float): set the time flow speed multiplier 
-        force_generators (Optional[List[BaseForceGenerator]]): list of force generators
-            that apply forces on objects
-        environments (Optional[List[Environment]]): list of environments in a scene
-        """
+		origin (float): define origin coordinates
+			can be setted in percentages using set_origin_percentages function
+			starting from the left upper corner by default (0, 0)
+		time_flow_coefficient (float): set the time flow speed multiplier
+		force_generators (Optional[List[BaseForceGenerator]]): list of force generators
+			that apply forces on objects
+		"""
+		self.id = id
+		self.name = name
+		self.object_id = 0
 
-        self.origin = origin
-        self.environments: List[Environment] = []
-        self.forces_registry: List[BaseForceGenerator] = []
-        self.width = width
-        self.height = height
+		self.origin = origin
+		self.forces_registry: List[BaseForceGenerator] = []
+		self.objects_registry = set()
 
-        self.time_flow_coefficient = time_flow_coefficient
+		if force_generators is not None:
+			self.forces_registry.extend(force_generators)
 
-        if force_generators is not None:
-            self.forces_registry.extend(force_generators)
+		Logger.log_info("New scene has just been created")
 
-        if environments is not None:
-            self.environments.extend(environments)
+	def add_object(self, object: Object):
+		# Set unique id and add to the set
+		object.id = self.object_id
+		self.objects_registry.add(object)
+		self.object_id += 1
 
-    def add_force_generator(self, force_generator: BaseForceGenerator) -> None:
-        """Adds force generator to the force registry"""
-        self.forces_registry.append(force_generator)
+	def get_objects_list_by_tag(self, tag: str) -> List["Objects"]:
+		# Todo make generator
+		objects = list()
 
-    def add_environment(self, environment: Environment) -> None:
-        """Adds mew environment to a scene"""
-        self.environments.append(environment)
+		for object in self.objects_registry:
+			if object.tag == tag:
+				objects.append(object)
 
-    def set_origin_percentages(self):
-        pass
+		return objects
 
-    def update_scene(self, time_since_last_update):
-        """Updates every environment and
-        apply forces in a scene
-        """
+	def get_object_by_tag(self, tag: str) -> "Objects":
+		for object in self.objects_registry:
+			if object.tag == tag:
+				return object
 
-        multiplied_time = self.time_flow_coefficient * time_since_last_update
+	def get_objects_by_name(self, name: str) -> List["Object"]:
+		# Todo make generator
+		objects = list()
 
-        self.apply_forces(multiplied_time)
-        self.update_environments(multiplied_time)
+		for object in self.objects_registry:
+			if object.name == name:
+				objects.append(object)
 
-    def update_environments(self, time_since_last_update):
-        for env in self.environments:
-            env.update_environment(time_since_last_update)
+		return objects
 
-    def apply_forces(self, time_since_last_update):
-        """Apply force from each force generator and delete disabled"""
+	def add_force_generator(self, force_generator: BaseForceGenerator) -> None:
+		"""Adds force generator to the force registry"""
+		self.forces_registry.append(force_generator)
 
-        for force_generator in self.forces_registry:
+	@Logger.decorator_succeeded(end_message="Scene successfully updated")
+	def update_scene(self, time_since_last_update):
+		"""Updates every environment and
+		apply forces in a scene
+		"""
 
-            if force_generator.is_active():
-                force_generator.apply_force(time_since_last_update)
+		multiplied_time = self.time_flow_coefficient * time_since_last_update
 
-            else:
-                del force_generator
+		self.apply_forces(multiplied_time)
 
-    def __str__(self) -> str:
-        return f"Scene consist of: \n  {self.environments} \n\n Forces: \n{self.forces_registry}"
+	def apply_forces(self, time_since_last_update):
+		"""Apply force from each force generator and delete disabled"""
+
+		for force_generator in self.forces_registry:
+
+			if force_generator.is_active():
+				force_generator.apply_force(time_since_last_update)
+
+			else:
+				del force_generator
+
+	def on_start(self):
+		pass
+
+	def on_exit(self):
+		pass
+
+	def __str__(self):
+		res = "Scene {}:{}".format(self.name, self.id)
+
+		for object in self.objects_registry:
+			res += "\n{}".format(str(object))
+
+		return res
+
+	def __eq__(self, other: "Scene") -> bool:
+		if self.id == other.id:
+			return True
+
+		return False
