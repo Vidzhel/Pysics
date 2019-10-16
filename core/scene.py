@@ -2,15 +2,13 @@ from typing import List, Optional
 
 from core.math.vector2d import Vector2d
 from logger.loggers import LoggingSystem as Logger
-from .force_generators.force_generators import BaseForceGenerator
 from .objects.object import Object
 
 
 class Scene(Object):
 
 	def __init__(self, name: str, origin: Vector2d = Vector2d(0.5, 0.5),
-	             time_flow_coefficient: float = 1.0,
-	             force_generators: Optional[List[BaseForceGenerator]] = None) -> None:
+	             time_flow_coefficient: float = 1.0) -> None:
 		"""Creates scene which is used to set environments and objects.
 
 		origin (float): define origin coordinates
@@ -25,11 +23,11 @@ class Scene(Object):
 		self.is_active = False
 
 		self.origin = origin
-		self.forces_registry: List[BaseForceGenerator] = []
+		# self.forces_registry: List[BaseForceGenerator] = []
 		self.objects_registry = set()
 
-		if force_generators is not None:
-			self.forces_registry.extend(force_generators)
+		# if force_generators is not None:
+		# 	self.forces_registry.extend(force_generators)
 
 		Logger.log_info("New scene has just been created")
 
@@ -39,7 +37,7 @@ class Scene(Object):
 		self.objects_registry.add(object)
 		self.object_id += 1
 
-	def get_objects_list_by_tag(self, tag: str) -> List["Objects"]:
+	def get_objects_list_by_tag(self, tag: str) -> List["Object"]:
 		# Todo make generator
 		objects = list()
 
@@ -49,7 +47,7 @@ class Scene(Object):
 
 		return objects
 
-	def get_object_by_tag(self, tag: str) -> "Objects":
+	def get_object_by_tag(self, tag: str) -> "Object":
 		for object in self.objects_registry:
 			if object.tag == tag:
 				return object
@@ -64,9 +62,9 @@ class Scene(Object):
 
 		return objects
 
-	def add_force_generator(self, force_generator: BaseForceGenerator) -> None:
-		"""Adds force generator to the force registry"""
-		self.forces_registry.append(force_generator)
+	# def add_force_generator(self, force_generator: BaseForceGenerator) -> None:
+	# 	"""Adds force generator to the force registry"""
+	# 	self.forces_registry.append(force_generator)
 
 	@Logger.decorator_succeeded(end_message="Scene successfully updated")
 	def update(self, delta_time):
@@ -74,20 +72,18 @@ class Scene(Object):
 		apply forces in a scene
 		"""
 
-		multiplied_time = self.time_flow_coefficient * delta_time
+	# self.apply_forces(delta_time)
 
-		self.apply_forces(multiplied_time)
-
-	def apply_forces(self, time_since_last_update):
-		"""Apply force from each force generator and delete disabled"""
-
-		for force_generator in self.forces_registry:
-
-			if force_generator.is_active():
-				force_generator.apply_force(time_since_last_update)
-
-			else:
-				del force_generator
+	# def apply_forces(self, time_since_last_update):
+	# 	"""Apply force from each force generator and delete disabled"""
+	#
+	# 	for force_generator in self.forces_registry:
+	#
+	# 		if force_generator.is_active():
+	# 			force_generator.apply_force(time_since_last_update)
+	#
+	# 		else:
+	# 			del force_generator
 
 	def on_start(self):
 		pass

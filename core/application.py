@@ -4,11 +4,12 @@ from typing import List
 from logger.loggers import FileLogger, ConsoleLogger
 from logger.loggers import LoggingSystem as Logger
 from .scene import Scene
-
+from .window import Window
+from events.base_event import Event
 
 class Application:
 
-	def __init__(self, frame_rate: int):
+	def __init__(self, frame_rate: int, window: Window):
 		"""Represents main object that takes control after scenes and other objects"""
 
 		self.scenes: List[Scene] = []
@@ -20,6 +21,8 @@ class Application:
 
 		self.is_running = False
 
+		self.window = window
+
 		self.init_logging_system()
 		self.init_event_system()
 		self.init_renderer()
@@ -28,19 +31,20 @@ class Application:
 		pass
 
 	def init_event_system(self):
-		pass
+		self.window.set_on_event_callback(self.on_event)
 
 	def init_logging_system(self):
 		FileLogger.set_default_file("logs.txt")
-		FileLogger.activate()
+		# FileLogger.activate()
 		ConsoleLogger.activate()
+		Logger.activate()
 
-	def set_screen(self, width: int, height: int, caption: str) -> None:
-		pass
+	def on_event(self, event: Event):
+		Logger.log_info(str(event))
 
 	def add_scene(self, scene: Scene) -> None:
 		scene.id = self.scene_id
-		self.scenes.add(scene)
+		self.scenes.append(scene)
 		self.scene_id += 1
 
 	def delete_scene(self, scene: Scene) -> None:
@@ -64,9 +68,9 @@ class Application:
 		self.time_flow_coeff = coefficient
 		self.update_time = 1 / self.frame_rate * coefficient
 
+	@Logger.decorator_info("Run an Application", "Exit an Application")
 	def run(self):
-		Logger.log_info("Run an Application")
-		# TODO open screen
+		self.window.open()
 		self.is_running = True
 
 		delta_time = 0
@@ -84,13 +88,13 @@ class Application:
 				if time_left > 0:
 					time.sleep(time_left / 1000)
 
+				self.window.update()
 				self.render()
 
 		except Exception as e:
-			Logger.log_error(str(e))
-			self.is_running = False
+			self.stop()
+			raise e
 
-		Logger.log_info("Exit an Application")
 
 	def load_scene(self, scene: Scene) -> None:
 		for _scene in self.scenes:
@@ -117,7 +121,10 @@ class Application:
 
 	def stop(self):
 		if not self.is_running:
-			raise Exception("The engine isn't working")
+			Logger.log_error("You can't stop disabled engine")
+			raise Exception("You can't stop disabled engine")
+
+		self.window.shutdown()
 
 		self.is_running = False
 		Logger.log_info("Application has just been stopped")
