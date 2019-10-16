@@ -1,19 +1,17 @@
 from core.application import Application
+from window.opengl_window import OpenGLWindow
 
 
 class Sandbox:
 
 	def __init__(self):
-		self.game_manager = Application()
-		self.init_window()
-
-	def init_window(self):
-		self.game_manager.set_screen(400, 400, "Sandbox")
+		window = OpenGLWindow(600, 300, "Sandbox")
+		self.game_manager = Application(60, window)
 
 	def start(self):
 		self.game_manager.run()
 
 
 if __name__ == "__main__":
-	game = Sandbox()
-	game.start()
+	sandbox = Sandbox()
+	sandbox.start()

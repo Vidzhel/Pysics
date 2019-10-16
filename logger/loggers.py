@@ -1,4 +1,6 @@
 import datetime
+import sys
+import traceback
 from abc import ABC
 from typing import Optional, Tuple, List
 
@@ -42,7 +44,9 @@ class Logger(ABC):
 					res = func(*args, **kwargs)
 				except Exception as e:
 					if cls.is_active:
-						ConsoleLogger.log_error(str(e.with_traceback))
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						ConsoleLogger.log_error(
+							"".join(traceback.format_exception(exc_type, exc_value, exc_tb)))
 					raise e
 
 				if end_message and cls.is_active:
@@ -67,7 +71,9 @@ class Logger(ABC):
 					res = func(*args, **kwargs)
 				except Exception as e:
 					if cls.is_active:
-						ConsoleLogger.log_error(str(e.with_traceback))
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						ConsoleLogger.log_error(
+							"".join(traceback.format_exception(exc_type, exc_value, exc_tb)))
 					raise e
 
 				if end_message and cls.is_active:
@@ -92,11 +98,14 @@ class Logger(ABC):
 					res = func(*args, **kwargs)
 				except Exception as e:
 					if cls.is_active:
-						ConsoleLogger.log_error(str(e.with_traceback))
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						ConsoleLogger.log_error(
+							"".join(traceback.format_exception(exc_type, exc_value, exc_tb)))
 					raise e
 
 				if end_message and cls.is_active:
-					ConsoleLogger.log_error(end_message)
+					exc_type, exc_value, exc_tb = sys.exc_info()
+					ConsoleLogger.log_error("".join(traceback.format_exception(exc_type, exc_value, exc_tb)))
 
 				return res
 
@@ -117,7 +126,9 @@ class Logger(ABC):
 					res = func(*args, **kwargs)
 				except Exception as e:
 					if cls.is_active:
-						ConsoleLogger.log_error(str(e.with_traceback))
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						ConsoleLogger.log_error(
+							"".join(traceback.format_exception(exc_type, exc_value, exc_tb)))
 					raise e
 
 				if end_message and cls.is_active:
@@ -272,23 +283,158 @@ class LoggingSystem(Logger):
 	@classmethod
 	def log_info(cls, message: str, file_path: Optional[str] = None,
 	             time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		ConsoleLogger.log_info(message, time)
 		FileLogger.log_info(message, file_path, time)
 
 	@classmethod
 	def log_warning(cls, message: str, file_path: Optional[str] = None,
 	                time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		ConsoleLogger.log_warning(message, time)
 		FileLogger.log_warning(message, file_path, time)
 
 	@classmethod
 	def log_error(cls, message: str, file_path: Optional[str] = None,
 	              time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		ConsoleLogger.log_error(message, time)
 		FileLogger.log_error(message, file_path, time)
 
 	@classmethod
 	def log_succeeded(cls, message: str, file_path: Optional[str] = None,
 	                  time: datetime.time = datetime.datetime.now().time()) -> None:
+		if not cls.is_active:
+			return
+
 		ConsoleLogger.log_succeeded(message, time)
 		FileLogger.log_succeeded(message, file_path, time)
+
+	@classmethod
+	def decorator_info(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
+
+		def decorator(func):
+
+			def inner(*args, **kwargs):
+
+				if start_mess and cls.is_active:
+					ConsoleLogger.log_info(start_mess)
+					FileLogger.log_info(start_mess)
+
+				try:
+					res = func(*args, **kwargs)
+				except Exception as e:
+					if cls.is_active:
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						error = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+						FileLogger.log_error(error)
+
+					raise e
+
+				if end_message and cls.is_active:
+					ConsoleLogger.log_info(end_message)
+					FileLogger.log_info(end_message)
+
+				return res
+
+			return inner
+
+		return decorator
+
+	@classmethod
+	def decorator_warning(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
+
+		def decorator(func):
+
+			def inner(*args, **kwargs):
+				if start_mess and cls.is_active:
+					ConsoleLogger.log_warning(start_mess)
+					FileLogger.log_info(start_mess)
+
+				try:
+					res = func(*args, **kwargs)
+				except Exception as e:
+					if cls.is_active:
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						error = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+						FileLogger.log_error(error)
+
+					raise e
+
+				if end_message and cls.is_active:
+					ConsoleLogger.log_info(end_message)
+					FileLogger.log_info(end_message)
+
+				return res
+
+			return inner
+
+		return decorator
+
+	@classmethod
+	def decorator_error(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
+
+		def decorator(func):
+
+			def inner(*args, **kwargs):
+
+				if start_mess and cls.is_active:
+					ConsoleLogger.log_info(start_mess)
+					FileLogger.log_info(start_mess)
+
+				try:
+					res = func(*args, **kwargs)
+				except Exception as e:
+					if cls.is_active:
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						error = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+						FileLogger.log_error(error)
+
+					raise e
+
+				if end_message and cls.is_active:
+					ConsoleLogger.log_info(end_message)
+					FileLogger.log_info(end_message)
+
+				return res
+
+			return inner
+
+		return decorator
+
+	@classmethod
+	def decorator_succeeded(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):
+
+		def decorator(func):
+
+			def inner(*args, **kwargs):
+
+				if start_mess and cls.is_active:
+					ConsoleLogger.log_info(start_mess)
+					FileLogger.log_info(start_mess)
+
+				try:
+					res = func(*args, **kwargs)
+				except Exception as e:
+					if cls.is_active:
+						exc_type, exc_value, exc_tb = sys.exc_info()
+						error = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+						FileLogger.log_error(error)
+
+					raise e
+
+				if end_message and cls.is_active:
+					ConsoleLogger.log_info(end_message)
+					FileLogger.log_info(end_message)
+
+				return res
+
+			return inner
+
+		return decorator
