@@ -1,5 +1,5 @@
 from core.math.vector2d import Vector2d
-from core.objects.game_object import GameObject
+from core.objects.entity import Entity
 from core.objects.object_components.base_component import BaseComponent, CT_RIGID_BODY, CT_TRANSFORM
 
 RB_TYPES = ("dynamic", "kinematic", "static")
@@ -7,7 +7,7 @@ RB_TYPES = ("dynamic", "kinematic", "static")
 
 class RigidBody(BaseComponent):
 
-	def __init__(self, name: str, attached_obj: GameObject,
+	def __init__(self, name: str, attached_obj: Entity,
 	             linear_drag: float, mass: float = 1.0, angular_drag: float = 1.0,
 	             rb_type: str = "dynamic",
 	             velocity: Vector2d = Vector2d(0, 0),
@@ -34,7 +34,7 @@ class RigidBody(BaseComponent):
 		self.result_force = self.result_force + force
 
 	def add_impulse(self, impulse: Vector2d) -> None:
-		pass
+		raise NotImplemented()
 
 	def subtract_force(self, force: Vector2d) -> None:
 		self.result_force = self.result_force - force

@@ -17,12 +17,12 @@ class Window(ABC):
 
 	@abstractmethod
 	def update(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def open(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def shutdown(self):
-		pass
+		raise NotImplemented()

@@ -1,37 +1,21 @@
-from abc import abstractmethod, ABC
-from logger.loggers import LoggingSystem as Logger
+from core.objects.properties.property import BoolProperty
+from events.events_dispatcher import EventDispatcher
 
 
-class Object(ABC):
+class Object(EventDispatcher):
+	enabled = BoolProperty()
 
-	def __init__(self, name: str) -> None:
-		self.name = name
-		self.id = None
-		# Todo set scene
-		self.tag = None
-
-		self.enabled = True
-
-		Logger.log_info("Object with name {} was created".format(name))
-
-	def disable(self):
-		self.enabled = False
-
-	def enable(self):
-		self.enabled = True
+	def __init__(self, **kwargs) -> None:
+		super(Object, self).__init__(**kwargs)
 
 	def switch(self):
 		self.enabled = not self.enabled
 
-	@abstractmethod
-	def update(self, delta_time: float) -> None:
-		pass
-
 	def __eq__(self, other: "Object") -> bool:
-		if other.id == self.id:
+		if other is self:
 			return True
 
 		return False
 
 	def __str__(self):
-		return "Object name:{}, id:{}, tag:{}".format(self.name, self.id, self.tag)
+		return "{}".format(type(self))

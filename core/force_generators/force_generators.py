@@ -19,7 +19,7 @@ class BaseForceGenerator:
         self.active = True
 
     def apply_force(self, time_since_last_apply: float) -> None:
-        pass
+	    raise NotImplemented()
 
     def is_active(self) -> bool:
         return self.active

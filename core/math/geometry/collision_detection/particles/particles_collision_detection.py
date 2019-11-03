@@ -28,54 +28,54 @@ def is_particle_belong_to_shape(particle: "Particle", shape: "BaseShape"):
 def get_inter_data_circle_particle(circle: "Circle", particle: "Particle") -> Optional[
 	Tuple[Vector2d, float, float]]:
 	if is_particle_belong_to_shape(particle, circle):
-		pass
+		raise NotImplemented()
 
 
 def get_inter_data_particle_circle(particle: "Particle", circle: "Circle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_ellipse_particle(ellipse: "Ellipse", particle: "Particle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_particle_ellipse(particle: "Particle", ellipse: "Ellipse") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_particle_particle(first_particle: "Particle", second_particle: "Particle") -> \
 		Optional[Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_particle_rectangle(particle: "Particle", rect: "Rectangle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_rectangle_particle(rect: "Rectangle", particle: "Particle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_particle_polygon(particle: "Particle", poly: "ConvexPolygon") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_polygon_particle(poly: "ConvexPolygon", particle: "Particle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_particle_triangle(particle: "Particle", triangle: "Triangle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()
 
 
 def get_inter_data_triangle_particle(triangle: "Triangle", particle: "Particle") -> Optional[
 	Tuple[Vector2d, float, float]]:
-	pass
+	raise NotImplemented()

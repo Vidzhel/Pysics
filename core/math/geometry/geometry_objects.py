@@ -11,7 +11,8 @@ class BaseGeometryObject(ABC):
 
 	@abstractmethod
 	def is_point_belongs(self, point) -> bool:
-		pass
+		raise NotImplemented()
+
 
 class Ray(BaseGeometryObject):
 	"""Represents a line that starts at first_point and goes through the second_point into the
@@ -178,7 +179,7 @@ class BaseShape(BaseGeometryObject):
 
 	@abstractmethod
 	def get_area(self) -> float:
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def get_height(self) -> float:
@@ -191,6 +192,7 @@ class BaseShape(BaseGeometryObject):
 	@abstractmethod
 	def get_support_point(self, direction: Vector2d):
 		"""Gets a point with the biggest dot product on the direction vector"""
+
 
 class Circle(BaseShape):
 	"""Represent circle shape that you can use to create object"""
@@ -537,7 +539,7 @@ class ConcavePolygon(BasePolygon):
 			raise AttributeError("Self-intersecting polygons are disallowed")
 
 	def triangulate(self, point: Vector2d) -> List['Triangle']:
-		pass
+		raise NotImplemented()
 
 
 class Rectangle(ConvexPolygon):

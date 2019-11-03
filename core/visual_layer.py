@@ -13,7 +13,7 @@ class Layer(Object):
 		self.components: Set[SpriteRenderer] = set()
 
 	def update(self, delta_time: float) -> None:
-		pass
+		raise NotImplemented()
 
 	def attach_render_component(self, render_component: SpriteRenderer):
 		if self.is_exist(render_component):

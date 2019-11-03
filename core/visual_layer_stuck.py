@@ -18,4 +18,4 @@ class LayerStuck(Object):
 		self.layer_id += 1
 
 	def update(self, delta_time: float) -> None:
-		pass
+		raise NotImplemented()

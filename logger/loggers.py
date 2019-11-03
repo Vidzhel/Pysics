@@ -16,19 +16,19 @@ class Logger(ABC):
 
 	@classmethod
 	def log_info(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
-		pass
+		raise NotImplemented()
 
 	@classmethod
 	def log_warning(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
-		pass
+		raise NotImplemented()
 
 	@classmethod
 	def log_error(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
-		pass
+		raise NotImplemented()
 
 	@classmethod
 	def log_succeeded(cls, message: str, time: datetime.time = datetime.datetime.now().time()) -> None:
-		pass
+		raise NotImplemented()
 
 	@classmethod
 	def decorator_info(cls, start_mess: Optional[str] = None, end_message: Optional[str] = None):

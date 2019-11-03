@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 from core.math.geometry.geometry_objects import BaseShape
-from core.objects.game_object import GameObject
+from core.objects.entity import Entity
 from core.objects.object_components.base_component import BaseComponent
 
 if TYPE_CHECKING:
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class BaseCollider(BaseComponent):
 
-	def __init__(self, name: str, component_type: str, body: BaseBody, attached_obj: GameObject,
+	def __init__(self, name: str, component_type: str, body: BaseBody, attached_obj: Entity,
 	             shape: BaseShape,
 	             is_approximated_shape: bool = False):
 		super(BaseCollider, self).__init__(name, component_type, attached_obj)
@@ -28,24 +28,24 @@ class BaseCollider(BaseComponent):
 
 	@abstractmethod
 	def on_collision_enter(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def on_collision_stay(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def on_collision_exit(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def on_trigger_enter(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def on_trigger_stay(self):
-		pass
+		raise NotImplemented()
 
 	@abstractmethod
 	def on_trigger_exit(self):
-		pass
+		raise NotImplemented()

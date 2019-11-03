@@ -2,7 +2,7 @@ import unittest
 
 
 class TestConvexPolygons(unittest.TestCase):
-	pass
+	raise NotImplemented()
 
 
 if __name__ == '__main__':

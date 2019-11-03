@@ -1,9 +1,9 @@
 class A:
-	pass
+	raise NotImplemented()
 
 
 class B(A):
-	pass
+	raise NotImplemented()
 
 
 objB = B()

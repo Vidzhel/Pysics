@@ -70,4 +70,4 @@ def get_shadow_polygon(poly: "BasePolygon", normal: Vector2d) -> Tuple[float, fl
 
 
 def get_distance_line_polygon(line: "Line", poly: "BasePolygon"):
-	pass
+	raise NotImplemented()

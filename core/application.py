@@ -1,11 +1,12 @@
 import time
 from typing import List
 
+from core.objects.scene import Scene
+from events.base_event import Event
 from logger.loggers import FileLogger, ConsoleLogger
 from logger.loggers import LoggingSystem as Logger
-from .scene import Scene
 from .window import Window
-from events.base_event import Event
+
 
 class Application:
 
@@ -28,7 +29,7 @@ class Application:
 		self.init_renderer()
 
 	def init_renderer(self):
-		pass
+		raise NotImplemented()
 
 	def init_event_system(self):
 		self.window.set_on_event_callback(self.on_event)
@@ -95,7 +96,6 @@ class Application:
 			self.stop()
 			raise e
 
-
 	def load_scene(self, scene: Scene) -> None:
 		for _scene in self.scenes:
 			if scene == _scene:
@@ -134,7 +134,7 @@ class Application:
 			scene.update(delta_time)
 
 	def render(self):
-		pass
+		raise NotImplemented()
 
 	def __str__(self) -> str:
 

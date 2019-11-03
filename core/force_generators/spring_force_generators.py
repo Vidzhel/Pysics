@@ -202,4 +202,4 @@ class BuoyancyForceGenerator(StaticForceGenerator):
         return force_magnitude
 
 class StiffSpringForceGenerator(StaticForceGenerator):
-    pass
+	raise NotImplemented()

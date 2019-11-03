@@ -40,7 +40,7 @@ class TestBaseForceGenerators(unittest.TestCase):
         self.static_force_generator.apply_force(1)
 
         self.assertEqual(self._object.result_force,
-                         Vector2d(0, -10), "Static force error")
+                         Vector2d(0, -10), )
 
         self._object.clear_force()
 
