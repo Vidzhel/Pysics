@@ -54,8 +54,8 @@ def check_shadows(first: "BaseGeometryObject", second: "BaseGeometryObject", get
 	return True
 
 
-def get_shadow_circle(circle: "")
-
+def get_shadow_circle(circle: ""):
+	raise NotImplemented()
 
 def get_shadow_polygon(poly: "BasePolygon", normal: Vector2d) -> Tuple[float, float]:
 	min_shadow = float("inf")

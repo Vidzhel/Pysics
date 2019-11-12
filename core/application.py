@@ -29,7 +29,7 @@ class Application:
 		self.init_renderer()
 
 	def init_renderer(self):
-		raise NotImplemented()
+		pass
 
 	def init_event_system(self):
 		self.window.set_on_event_callback(self.on_event)
@@ -134,7 +134,7 @@ class Application:
 			scene.update(delta_time)
 
 	def render(self):
-		raise NotImplemented()
+		pass
 
 	def __str__(self) -> str:
 

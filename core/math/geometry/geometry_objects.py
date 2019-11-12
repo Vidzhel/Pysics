@@ -448,7 +448,7 @@ class BasePolygon(BaseShape, ABC):
 
 		return None
 
-	def is_point_belongs(self, point) -> bool:
+	def is_point_belongs(self, point: Vector2d) -> bool:
 		# Draw a horizontal ray that starts the point, if count of times the ray intersects with
 		# a polygon sides is even than the point located inside the polygon
 

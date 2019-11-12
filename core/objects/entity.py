@@ -1,6 +1,7 @@
 from inspect import getmro
 from typing import Set, List, Optional, Dict
 
+from core.objects.properties.property import BoundedNumericProperty
 from events.event_arguments import ComponentsChanged
 from logger.loggers import LoggingSystem as Logger
 from .object import Object
@@ -20,7 +21,9 @@ class Entity(Object):
 	__entities_storage: Dict[str, List["Entity"]] = dict()
 	__events__ = ["on_component_added", "on_component_removed"]
 
-	def __init__(self, name: str, tag: str):
+	depth = BoundedNumericProperty(min=0, max=None)
+
+	def __init__(self, tag: str, **kwargs):
 		"""
 		:param tag: the same tag can be set to multiple objects and then easily get the group of objects
 		"""
@@ -31,11 +34,14 @@ class Entity(Object):
 		self.components: Set[BaseComponent] = set()
 		self.parent: Optional["Entity"] = None
 
-		self.add_component(Transform())
+		self.transform = Transform(**kwargs)
+		self.add_component(self.transform)
 		self._register_entity()
 
 	def add_component(self, component: BaseComponent) -> None:
-		if self.is_component(component):
+		"""Adds component and dispatch event 'on_component_added'"""
+
+		if self.has_component(component):
 			error = "Component of the same type already exists"
 			Logger.log_error(error)
 			raise AttributeError(error)
@@ -45,6 +51,8 @@ class Entity(Object):
 		self.dispatch_event("on_component_added", ComponentsChanged(component))
 
 	def remove_component(self, component: BaseComponent) -> None:
+		"""Removes component and dispatch event 'on_component_removed'"""
+
 		if component.attached_obj is not self:
 			error = "The component {} is not a component of the {}".format(component, self)
 			Logger.log_error(error)
@@ -54,7 +62,13 @@ class Entity(Object):
 		component.attached_obj = None
 		self.dispatch_event("on_component_removed", ComponentsChanged(component))
 
-	def is_component(self, component: BaseComponent) -> bool:
+	def has_component(self, component: BaseComponent) -> bool:
+		"""Determinate is the entity has a component of the same
+		type or subtype as a given component
+
+		:return bool: true if the entity has component of tha same
+		type or subtype"""
+
 		classes_to_check: tuple = getmro(component.__class__)
 
 		for comp in self.components:
@@ -81,12 +95,19 @@ class Entity(Object):
 	def get_objects_by_tag(self, tag: str) -> List["Entity"]:
 		return self.__entities_storage.get(tag, [])
 
-	def get_component_by_type(self, component_type: type) -> BaseComponent:
-		for component in self.components:
-			if type(component) is component_type:
-				return component
+	def get_component_by_type(self, component: type) -> Optional[BaseComponent]:
+		"""Get component of the given component's type or derived from the type classes"""
+		classes_to_check: tuple = getmro(component)
 
-	@Logger.decorator_info()
+		for comp in self.components:
+			for base in classes_to_check:
+				if base in (type(object), type(BaseComponent)):
+					continue
+				if base in comp.__class__.mro():
+					return comp
+
+		return None
+
 	def get_component(self, component_name: str) -> BaseComponent:
 		for component in self.components:
 			if component.__class__.__name__ == component_name:
@@ -100,12 +121,12 @@ class Entity(Object):
 				return component
 
 	def __str__(self):
-		res = "{}:{}\n(".format(type(self).__name__, self.name)
+		res = "{}".format(type(self).__name__)
 
 		return res
 
 	def __repr__(self):
-		res = "{space}{}:{}\n(".format(type(self), self.name, space="{space}")
+		res = "{}: (\n".format(type(self))
 
 		for component in self.components:
 			res += "{}\n".format(component)
