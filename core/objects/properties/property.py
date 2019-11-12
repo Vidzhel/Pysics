@@ -1,5 +1,6 @@
-from typing import Optional, Callable, Any, Union, TYPE_CHECKING
+from typing import Optional, Callable, Any, Union, TYPE_CHECKING, List
 
+from core.objects.constraints.constraint import BaseConstraint
 from core.objects.properties.property_storage import PropertyStorage
 from events.event_arguments import EventArguments, PropertyChangedEventArgs
 
@@ -11,16 +12,18 @@ class Property:
 
 	def __init__(self, default_value: Any, dispatch_on_duplication: bool = False,
 	             comparator: Optional[Callable[[Optional[Any], Any, Any], bool]] = None,
+	             allowed_types: Optional[List[type]] = None,
 	             error_value: Any = None,
 	             error_handler: Optional[Callable[[Optional[Any], Any], Any]] = None,
 	             allow_none: bool = False):
 		"""
-		:param default_value: value that will be set after __init__
+		:param default_value: a value that will be set after __init__
 		:param dispatch_on_duplication: if event will be dispatched when
 		:param comparator: takes two values (old one and new one) and return true if they the same
-		:param error_value: value that will be set if the given value isn't proper
+		:param allowed_types: a list of allowed types for this property
+		:param error_value: a value that will be set if the given value isn't proper
 		:param error_handler: will be called when given value isn't proper and error_value isn't set
-		:param allow_none: allow None value
+		:param allow_none: allows None value
 		"""
 		self.dispatcher: Optional["EventDispatcher"] = None
 		self._name: Optional[str] = None
@@ -29,6 +32,9 @@ class Property:
 		self.error_value = error_value
 		self.default_value = default_value
 		self.dispatch_on_duplication = dispatch_on_duplication
+
+		# Set empty list if allowed types aren't specified
+		self.allowed_types = [] if not allowed_types else allowed_types
 
 		if comparator is not None and not callable(comparator):
 			raise AttributeError("Comparator should be callable, {}".format(self))
@@ -79,8 +85,8 @@ class Property:
 			raise Exception("Can't get property storage, {}, dispatcher {}"
 			                .format(self, self.dispatcher))
 
-	def __get__(self, instance, owner) -> Any:
-		if self.dispatcher is None:
+	def __get__(self, dispatcher_instance, owner) -> Any:
+		if dispatcher_instance is None:
 			return self
 
 		prop_storage = self._get_prop_storage()
@@ -107,7 +113,7 @@ class Property:
 				raise e
 
 		prop_storage.value = value
-		self.dispatch(PropertyChangedEventArgs(value))
+		self.dispatch(PropertyChangedEventArgs(old_value, value))
 
 	def dispatch(self, event_args: EventArguments):
 		event_args.event_name = self.name
@@ -115,10 +121,23 @@ class Property:
 		prop_storage.dispatch(self, event_args)
 
 	def check_value(self, value) -> None:
+		"""
+		:raise ValueError: if encounter wrong value
+		:param value: value to check
+		"""
 
 		if value is None and not self.allow_none:
 			raise ValueError("None values disallowed in the property, {}, dispatcher {}"
 			                 .format(self, self.dispatch_on_duplication))
+		else:
+			# Check if a value of allowed type
+			if issubclass(value, type):
+				if value not in self.allowed_types:
+					raise ValueError("type {}, is not allowed in the property {}".format(value, self))
+
+			else:
+				if type(value) not in self.allowed_types:
+					raise ValueError("type {}, is not allowed in the property {}".format(type(value), self))
 
 	def compare_values(self, old: Any, new: Any) -> bool:
 		""":return: return true if values match"""
@@ -156,6 +175,40 @@ class NumericProperty(Property):
 			                 .format(type(value), self, self.dispatcher))
 
 
+class BoundedNumericProperty(Property):
+
+	def __init__(self, min: Optional[Numbers], max: Optional[Numbers], default_value: Numbers = 0,
+	             dispatch_on_duplication: bool = False,
+	             comparator: Optional[Callable[[Optional[Any], Numbers, Numbers], bool]] = None,
+	             error_value: Numbers = None,
+	             error_handler: Optional[Callable[[Optional[Any], Numbers], Numbers]] = None,
+	             allow_none: bool = False):
+		super(BoundedNumericProperty, self).__init__(default_value, dispatch_on_duplication, comparator,
+		                                             error_value, error_handler, allow_none)
+		self.min = min
+		self.max = max
+		self.use_min = type(min) in (int, float)
+		self.use_max = type(min) in (int, float)
+
+	def set_bounds(self, min: Optional[Numbers], max: Optional[Numbers]):
+		self.min = min
+		self.max = max
+		self.use_min = type(min) in (int, float)
+		self.use_max = type(min) in (int, float)
+
+	def check_value(self, value) -> None:
+		super(BoundedNumericProperty, self).check_value(value)
+
+		if type(value) not in (int, float, type(None)):
+			raise ValueError("The property accept only (int, float) types, got {}, {}, dispatcher {}"
+			                 .format(type(value), self, self.dispatcher))
+
+		if self.min is not None and value < self.min:
+			raise ValueError("Value below the minimum bound {}, got {}".format(self.min, value))
+		elif self.max is not None and value > self.max:
+			raise ValueError("Value above the maximum bound {}, got {}".format(self.max, value))
+
+
 class BoolProperty(Property):
 
 	def __init__(self, default_value: bool = False, dispatch_on_duplication: bool = False,
@@ -174,23 +227,31 @@ class BoolProperty(Property):
 			                 .format(type(value), self, self.dispatcher))
 
 
-class TupleProperty(Property):
-	pass
+Constrained = Union[int, float, BaseConstraint]
 
 
 class ConstrainedProperty(Property):
 
-	def __init__(self, default_value: bool = False, dispatch_on_duplication: bool = False,
-	             comparator: Optional[Callable[[Optional[Any], bool, bool], bool]] = None,
+	def __init__(self, constraint_types: List[type], default_value: Any = 0,
+	             dispatch_on_duplication: bool = False,
+	             comparator: Optional[
+		             Callable[[Optional[Any], Constrained, Constrained], Constrained]] = None,
 	             error_value: bool = None,
-	             error_handler: Optional[Callable[[Optional[Any], bool], bool]] = None,
-	             allow_none: bool = False):
+	             error_handler: Optional[Callable[[Optional[Any], Constrained], Constrained]] = None,
+	             allow_none: bool = True):
+		"""
+
+		:param constraint_types: the type of constraint that will be allowed, other types will be cause an
+		exception
+		:param default_value: value that will be set after __init__
+		:param dispatch_on_duplication: if event will be dispatched when
+		:param comparator: takes two values (old one and new one) and return true if they the same
+		:param error_value: value that will be set if the given value isn't proper
+		:param error_handler: will be called when given value isn't proper and error_value isn't set
+		:param allow_none: allow None value
+		"""
+		constraint_types.append(float)
+		constraint_types.append(int)
+		constraint_types.append(BaseConstraint)
 		super(ConstrainedProperty, self).__init__(default_value, dispatch_on_duplication, comparator,
-		                                          error_value, error_handler, allow_none)
-
-	def check_value(self, value) -> None:
-		super(ConstrainedProperty, self).check_value(value)
-
-		if type(value) not in (bool, type(None)):
-			raise ValueError("The property accept only (bool) types, got {}, {}, dispatcher {}"
-			                 .format(type(value), self, self.dispatcher))
+		                                          constraint_types, error_value, error_handler, allow_none)
