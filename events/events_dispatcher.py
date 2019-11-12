@@ -189,17 +189,18 @@ class EventDispatcher:
 		except KeyError:
 			pass
 
-	def dispatch_event(self, event_name: str, event_args: "EventArguments"):
+	def dispatch_event(self, event_name: str, event_args: "EventArguments", sender=None):
 		event_args.event_name = event_name
+		sender = sender if sender is not None else self
 
 		try:
 
 			if event_name[:3] == "on_":
 				event_args.event_type = EventType.CustomEvent
-				self._events_storage[event_name].dispatch(self, event_args)
+				self._events_storage[event_name].dispatch(sender, event_args)
 			else:
 				event_args.event_type = EventType.PropertyEvent
-				self._props_storage[event_name].dispatch(self, event_args)
+				self._props_storage[event_name].dispatch(sender, event_args)
 
 		except KeyError:
 			pass

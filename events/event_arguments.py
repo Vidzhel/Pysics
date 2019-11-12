@@ -25,10 +25,11 @@ class EventArguments:
 
 class PropertyChangedEventArgs(EventArguments):
 
-	def __init__(self, new_value):
+	def __init__(self, old_value, new_value):
 		super(PropertyChangedEventArgs, self).__init__()
 		self.event_type = EventType.PropertyEvent
 		self.new_value = new_value
+		self.old_value = old_value
 
 	def __str__(self):
 		return "{}, new_value= {}".format(super(PropertyChangedEventArgs, self).__str__(), self.new_value)
